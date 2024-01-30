@@ -5,7 +5,7 @@ import json
 import time
 import uuid
 
-r = redis.Redis(host='127.0.0.1', port=55001, db=0)
+r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 app = Flask(__name__,static_url_path='',static_folder="static/")
 
 @app.route("/")

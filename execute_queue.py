@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, T5ForConditionalGeneration
 from sentence_transformers import SentenceTransformer, util
 import sys
 
-r = redis.Redis(host='127.0.0.1', port=55001, db=0)
+r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 
 tokenizer = AutoTokenizer.from_pretrained(
     "lmsys/fastchat-t5-3b-v1.0", legacy=False)
@@ -24,6 +24,9 @@ while True:
     except:
         queue = []
     for item in queue:
+        new_item = item
+        new_item["response"] = summarize_with_fastchat(item['text'],item['question'],True)
+        new_item["isComplete"]
 
 def rank(passage, question):
     def merge_sentances_into_paragraph(sentances):
