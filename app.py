@@ -14,29 +14,45 @@ def home():
 
 @app.route("/gen-summary",methods=["POST"])
 def run_summarize():
-    id = uuid.uuid4()
-    data = request.get_json()
-    print(data)
-    queue = r.get("quail_queue")
     try:
-        queue = json.loads(queue)
-    except:
-        queue = []
-    queue = [{
-        "index":0,
-        "id": id,
-        "time": time.time(),
-        "text":"",
-        "question":"",
-        "response": "",
-        "isComplete":False
-        }]
-    r.set("quail_queue", json.dumps(queue))
-    latest_queue = queue
-    while len(list(filter(lambda a: a["id"] == id, latest_queue))) != 0 and list(filter(lambda a: a["id"] == id, latest_queue))[0]["isComplete"] == False:
-        sleep(10)
-        latest_queue = r.get("queue")
-    return list(filter(lambda a: a["id"] == id, latest_queue))[0]
+        sum_id = str(uuid.uuid4())
+        data = request.get_json()
+        r.set(f"job:{sum_id}", json.dumps({
+            "id": sum_id,
+            "time": time.time(),
+            "text":data["passage_input"],
+            "question":data["passage_input"],
+            "response": "",
+            "isComplete":False
+            }))
+        return {
+            "error":False, 
+            "id":sum_id
+        }
+    except Exception as error: 
+        print(error)
+        return {
+            "error":True, 
+        }  
+    
+@app.route("/poll")
+def poll():
+    try:
+        print(f"job:{request.args.get('id')}")
+        item = r.get(f"job:{request.args.get('id')}")
+        if item is None:
+            return {
+            "error":True,
+            "response":"error"
+            }      
+        else:
+            return item 
+    except Exception as error: 
+        print(error)
+        return {
+            "error":True,
+            "response":"error"
+        }
 
 if __name__ == '__main__':
     app.run(debug=True)

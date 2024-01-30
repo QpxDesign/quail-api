@@ -1,47 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,900">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Quail - Hyperaccurate AI Text Summary Generator</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <script>
-    function submit() {
-      var input = document.getElementById("input")
-      var button = document.getElementById("submit-button")
-      var output = document.getElementById("output")
-      button.innerHTML = "Loading..."
-      const options = {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: "POST",
-        body: JSON.stringify({input: input.value})
-      }
-      fetch("/gen-summary",options)
-        .then((r) => (r.json()))
-        .then((r2) => {
-        button.innerHTML = "Submit"
-        output.value = r2.summary
-        }).catch((e) => {
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,900">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Quail - Hyperaccurate AI Text Summary Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<script>
+  function loadHandle() {
+    console.log("poll")
+    var intervalId = window.setInterval(function () {
+      poll()
+    }, 5000);
+  }
+  function poll() {
+    console.log("poll")
+    var output = document.getElementById("output")
+    var button = document.getElementById("submit-button")
+    params = new URL(document.location).searchParams
+    fetch(`/poll?id=${params.get('id')}`)
+      .then((r) => r.json())
+      .then((r) => {
+        console.log(r)
+        if (r.response.length > 0) {
+          output.value = r.response
+          button.innerHTML = "Submit"
+        }
+      })
+  }
+  function submit() {
+    var passage_input = document.getElementById("passage_input")
+    var query_input = document.getElementById("query_input")
+    var button = document.getElementById("submit-button")
+    var output = document.getElementById("output")
+    button.innerHTML = "Loading..."
+    const options = {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(
+        {
+          passage_input: passage_input.value,
+          query_input: passage_input.value
+        }
+      )
+    }
+    fetch("/gen-summary", options)
+      .then((r) => (r.json()))
+      .then((r2) => {
+        console.log(r2)
+        if (r2.error === true) {
           alert("Unknown Error")
           button.innerHTML = "Submit"
+        } else {
+          button.innerHTML = "Loading..."
+          window.location.href += `?id=${r2.id}`
+        }
+      }).catch((e) => {
+        console.log(e)
+        alert("Unknown Error")
+        button.innerHTML = "Submit"
       })
-    }
-  </script>
-  <body>
-    <div class='center'>
+  }
+</script>
+
+<body>
+  <div class='center' onload="loadHandle()">
     <h1>Quail</h1>
     <h3>Dual-LM, High-Accuracy Text Summaraizer </h3>
-    <textarea id="input"></textarea>
+    <input id="query_input"></input>
+    <textarea id="passage_input"></textarea>
     <button id="submit-button" onclick="submit()">Submit</button>
-
-    <svg id="arrow" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 384 512" height="200px" width="200px" xmlns="http://www.w3.org/2000/svg"><path d="M214.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 109.3V480c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128z"></path></svg>
+    <button onclick="poll()">update</button>
+    <svg id="arrow" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 384 512" height="200px"
+      width="200px" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M214.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 109.3V480c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128z">
+      </path>
+    </svg>
     <textarea id="output"></textarea>
-    </div>
-  </body>
+  </div>
+</body>
+
 </html>
