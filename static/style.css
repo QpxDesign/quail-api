@@ -1,0 +1,54 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  font-family: "Source Serif Pro";
+  font-size:2.5em;
+  margin: 0;
+}
+h3 {
+  font-family: "Source Serif Pro";
+  font-size:1.45em;
+  margin: 0;
+  font-weight:400
+}
+.center,form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.center {
+    padding-bottom:5em;
+
+}
+textarea {
+  width: min(70vw,60em);
+  height:42.5vh;
+  border: 3px solid #f87171;
+  border-radius:1em;
+  font-size:1.75em;
+  padding-left:.5em;
+  padding-right:.5em;
+  padding-top:.25em
+}
+#arrow {
+  transform: rotate(180deg);
+  height:7.5em;
+  margin: 1em;
+}
+button {
+  font-family: "Source Serif Pro";
+  font-size:1.45em;
+  color: white;
+  background: #f87171;
+  border: none;
+  margin-top:.75em;
+  padding: .1em 1.5em;
+  cursor: pointer;
+  transition: .12s;
+}
+form input:hover {
+  transform: scale(.95)
+}

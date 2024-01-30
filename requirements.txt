@@ -1,0 +1,6 @@
+redis[hiredis]
+flask
+requests
+flask-cors
+transformers
+sentence_transformers
