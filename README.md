@@ -1,4 +1,4 @@
-## Quail: A QA-First, Hallucination-Lite, Multi-LM Summarizer
+## Quail: A QA-First, Hallucination-Lite, Multi-LM Summarizer (COMING SOON!)
 ### How it works
 First, we take the inputted passage, split it into individual sentences, and rank each sentence by relevance to the query using SentenceTransformers. We then take the top-n ranked sentences, combine them back into a new passage, and use FastChat-T5, a Text-To-Text Transfer Transformer Learning-based langague model to summarize the passage. FastChat-T5 is based on Google's Flan XL T5 Model.
 ### How to use
