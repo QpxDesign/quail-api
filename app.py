@@ -7,6 +7,7 @@ import uuid
 
 r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 app = Flask(__name__,static_url_path='',static_folder="static/")
+CORS(app)
 
 @app.route("/")
 def home():
@@ -21,7 +22,7 @@ def run_summarize():
             "id": sum_id,
             "time": time.time(),
             "text":data["passage_input"],
-            "question":data["passage_input"],
+            "question":data["query_input"],
             "response": "",
             "isComplete":False
             }))
