@@ -4,6 +4,11 @@ import redis
 import json
 import time
 import uuid
+import pytesseract
+from pdf2image import convert_from_bytes
+import glob
+import base64
+
 
 r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 app = Flask(__name__,static_url_path='',static_folder="static/")
@@ -18,14 +23,31 @@ def run_summarize():
     try:
         sum_id = str(uuid.uuid4())
         data = request.get_json()
-        r.set(f"job:{sum_id}", json.dumps({
-            "id": sum_id,
-            "time": time.time(),
-            "text":data["passage_input"],
-            "question":data["query_input"],
-            "response": "",
-            "isComplete":False
-            }))
+        if "isPDF" in request.data and request.isPDF:
+             f = base64.b64decode(request.data.passage)
+             f_contents = convert_from_bytes(f)
+             full_text = ""
+             for pageNum,imgBlob in enumerate(f_contents):
+                text = pytesseract.image_to_string(imgBlob,lang='eng')
+                full_text += text
+                 
+             r.set(f"job:{sum_id}", json.dumps({
+                "id": sum_id,
+                "time": time.time(),
+                "text":full_text,
+                "question":data["query_input"],
+                "response": "",
+                "isComplete":False
+                }))
+        else:
+            r.set(f"job:{sum_id}", json.dumps({
+                "id": sum_id,
+                "time": time.time(),
+                "text":data["passage_input"],
+                "question":data["query_input"],
+                "response": "",
+                "isComplete":False
+                }))
         return {
             "error":False, 
             "id":sum_id
