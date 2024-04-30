@@ -10,10 +10,17 @@ import sys
 import time
 r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 start_time = time.time()
-tokenizer = AutoTokenizer.from_pretrained(
+
+model_name = "FastChat"
+
+if model_name == "FastChat":
+        tokenizer = AutoTokenizer.from_pretrained(
     "lmsys/fastchat-t5-3b-v1.0", legacy=False)
-model = AutoModelForSeq2SeqLM.from_pretrained(
+        model = AutoModelForSeq2SeqLM.from_pretrained(
     "lmsys/fastchat-t5-3b-v1.0", load_in_8bit=True)
+if model_name == "Flan":
+        tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
+        model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
 device = "cuda"
 st_model = SentenceTransformer('paraphrase-MiniLM-L6-v2',device='cuda')
 print("MODELS LOADED")
@@ -55,12 +62,13 @@ while True:
     for item in r.scan_iter("job:*"):
         new_item = r.get(item)
         new_item = json.loads(new_item)
-        if new_item['isComplete'] == False:
+        if new_item['isComplete'] == False:	
             try:
                 new_item["response"] = summarize_with_fastchat(new_item['text'],new_item['question'],True)
             except:
-                new_item["response"] = "error. invalid input."
+               	new_item["response"] = "error. invalid input." 
             new_item["isComplete"] = True
             r.set(item,json.dumps(new_item))
             print("Complete!")
+
 

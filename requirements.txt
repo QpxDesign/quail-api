@@ -4,6 +4,3 @@ requests
 flask-cors
 transformers
 sentence_transformers
-pytesseract
-tesseract
-pdf2image
