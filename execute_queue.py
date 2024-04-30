@@ -11,20 +11,14 @@ import time
 r = redis.Redis(host='127.0.0.1', port=6379, db=0)
 start_time = time.time()
 
-model_name = "FastChat"
+tokenizer = AutoTokenizer.from_pretrained("lmsys/fastchat-t5-3b-v1.0", legacy=False, skip_special_tokens=True)
+print("b")
+tokenizer._tokenizer.encode_special_tokens = True
+model = AutoModelForSeq2SeqLM.from_pretrained("lmsys/fastchat-t5-3b-v1.0", load_in_8bit=True)
 
-if model_name == "FastChat":
-        tokenizer = AutoTokenizer.from_pretrained(
-    "lmsys/fastchat-t5-3b-v1.0", legacy=False)
-        model = AutoModelForSeq2SeqLM.from_pretrained(
-    "lmsys/fastchat-t5-3b-v1.0", load_in_8bit=True)
-if model_name == "Flan":
-        tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
-        model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
 device = "cuda"
 st_model = SentenceTransformer('paraphrase-MiniLM-L6-v2',device='cuda')
 print("MODELS LOADED")
-
 def rank(passage, question):
     def merge_sentances_into_paragraph(sentances):
         ans = ""
@@ -50,7 +44,7 @@ def summarize_with_fastchat(passage, question, rankSentances=True):
        	passage = f"Human: Summarize this passage in 1-2 sentences {passage} Assistant: "
     else:
         passage = f"Human: Summarize this passage in 1-2 sentences {rank(passage, question)[:MAX_PASSAGE_LENGTH]} Assistant: "
-    encoded_input = tokenizer.encode(passage, return_tensors='pt').to(device)
+    encoded_input = tokenizer.encode(passage, return_tensors='pt')
     output = model.generate(
         encoded_input, max_length=1024, temperature=0.7, top_p=1).to(device)
     decoded_output = tokenizer.decode(output[0, :], skip_special_tokens=True)
@@ -65,7 +59,8 @@ while True:
         if new_item['isComplete'] == False:	
             try:
                 new_item["response"] = summarize_with_fastchat(new_item['text'],new_item['question'],True)
-            except:
+            except Exception as e:
+                print(e)
                	new_item["response"] = "error. invalid input." 
             new_item["isComplete"] = True
             r.set(item,json.dumps(new_item))
