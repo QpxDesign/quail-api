@@ -56,9 +56,11 @@ while True:
         new_item = r.get(item)
         new_item = json.loads(new_item)
         if new_item['isComplete'] == False:
-            new_item["response"] = summarize_with_fastchat(new_item['text'],new_item['question'],True)
+            try:
+                new_item["response"] = summarize_with_fastchat(new_item['text'],new_item['question'],True)
+            except:
+                new_item["response"] = "error. invalid input."
             new_item["isComplete"] = True
             r.set(item,json.dumps(new_item))
             print("Complete!")
-
 
