@@ -8,3 +8,4 @@ sentence_transformers
 bitsandbytes
 protobuf
 huggingface-hub==0.25.2
+accelerate
