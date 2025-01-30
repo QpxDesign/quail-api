@@ -2,7 +2,7 @@
 ### How it works
 First, we take the inputted passage, split it into individual sentences, and rank each sentence by relevance to the query using SentenceTransformers. We then take the top-n ranked sentences, combine them back into a new passage, and use FastChat-T5, a Text-To-Text Transfer Transformer Learning-based langague model to summarize the passage. FastChat-T5 is based on Google's Flan XL T5 Model.
 ### How to use
-Paste in your passage, and query, and hit 'Go'! Depending on how busy the site is, it may take some time for you to get your summary. Using a Redis database, we queue summary jobs, and execute them one-by-one in the order that they are recieved. Each summary takes around 30 seconds. (Note, Summary Generation is still a WIP)
+Paste in your passage, and query, and hit 'Go'! Depending on how busy the site is, it may take some time for you to get your summary. Using a Redis database, we queue summary jobs, and execute them one-by-one in the order that they are recieved. Each summary takes around 30 seconds. QUEUE EXECUTER MUST USE PYTHON=3.10!
 ### Dependencies
 - [SentenceTransformers](https://www.sbert.net/)
 - [FastChat-T5](https://huggingface.co/lmsys/fastchat-t5-3b-v1.0)
